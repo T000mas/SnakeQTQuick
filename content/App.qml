@@ -13,7 +13,7 @@ Window {
     property string direction: "right"
     property var snakeBody: [{x: 5, y: 5}] // Initial snake with one segment
     property int score: 0
-    property int timerInterval: 150 - score/5
+    property int timerInterval: 80 - score/5
 
     function moveSnake() {
         print(direction);
@@ -71,17 +71,15 @@ Window {
     function gameOver() {
         gameLoopTimer.running = false;
         scoreDisplay.text = "Score: " + score; // Update the display
-        gameOverWindow.visible = true;
+        gameOverWindow.showGameOver()
     }
 
 
-    GameOver{
-        id: gameOverWindow
-    }
+
 
     Timer {
         id: gameLoopTimer
-        interval: 150 - score/5 // Adjust for speed
+        interval: timerInterval - score/5 // Adjust for speed
         running: true
         repeat: true
         onTriggered: {
@@ -110,6 +108,14 @@ Window {
         id: gameArea
         anchors.fill: parent
         color: "black"
+
+        GameOver{
+            id: gameOverWindow
+        }
+
+        Fireworks{
+
+        }
 
         Text {
             id: scoreDisplay

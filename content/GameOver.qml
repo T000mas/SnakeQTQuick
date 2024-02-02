@@ -7,14 +7,6 @@ Item {
         height: parent.height
         visible: false // Initially hidden
 
-        // Semi-transparent background
-        Rectangle {
-            anchors.fill: parent
-            color: "#88000000"
-        }
-
-
-
         // Game Over message
         MessageDialog {
             id: gameOverDialog
