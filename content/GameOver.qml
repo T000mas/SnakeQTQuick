@@ -2,35 +2,28 @@ import QtQuick 6.2
 import QtQuick.Dialogs
 
 Item {
-    // Cover the entire game area
         width: parent.width
         height: parent.height
-        visible: false // Initially hidden
+        visible: false
 
-        // Game Over message
+        Fireworks {
+            anchors.right: parent.right
+        }
+        Fireworks {
+        }
+
         MessageDialog {
             id: gameOverDialog
-            title: "Game Over"
             buttons: MessageDialog.Ok
+            title: "Game Over!"
+            informativeText: "Your Score: " + score
             onAccepted: {
-                // Handle restart or close
-                parent.visible = false
-            }
-            Text {
-                id: gameOverText
-                text: "Your Score: " + score // Assuming 'score' is your score variable
-                anchors.centerIn: parent
-                font.pixelSize: 24
-                color: "white"
-            }
-
-            Fireworks {
-                anchors.fill: parent
-                visible: parent.visible // Show fireworks when the game over window is visible
+                Qt.quit();
             }
         }
 
-        // Show this item and the dialog when game over
+
+
         function showGameOver() {
             visible = true
             gameOverDialog.open()

@@ -11,18 +11,17 @@ Window {
     title: "QML Snake Game"
 
     property string direction: "right"
-    property var snakeBody: [{x: 5, y: 5}] // Initial snake with one segment
+    property var snakeBody: [{x: 5, y: 5}]
     property int score: 0
-    property int timerInterval: 80 - score/5
+    property int timerInterval: 120 - score/5
+    property bool wasDirectionChanged: false
 
     function moveSnake() {
-        print(direction);
         for (let i = snakeBody.length - 1; i > 0; i--) {
             snakeBody[i].x = snakeBody[i-1].x;
             snakeBody[i].y = snakeBody[i-1].y;
         }
 
-        // Move head based on direction
         if (direction === "right") {
             snakeBody[0].x += 1;
         } else if (direction === "left") {
@@ -32,6 +31,7 @@ Window {
         } else if (direction === "down") {
             snakeBody[0].y += 1;
         }
+        wasDirectionChanged = false
 
         // Trigger UI update
         snakeBodyChanged();
@@ -43,27 +43,23 @@ Window {
     }
 
     function checkCollisions() {
-        // Check border collisions
         if (snakeBody[0].x < 0 || snakeBody[0].x >= gameArea.width / 20 ||
                 snakeBody[0].y < 0 || snakeBody[0].y >= gameArea.height / 20) {
             gameOver()
         }
 
-        // Check self-collision
         for (let i = 1; i < snakeBody.length; i++) {
             if (snakeBody[0].x === snakeBody[i].x && snakeBody[0].y === snakeBody[i].y) {
                 gameOver()
             }
         }
 
-        // Check food collision
         if (snakeBody[0].x === food.x / 20 && snakeBody[0].y === food.y / 20) {
             growSnake();
-            // Move food to a new location
             food.x = Math.floor(Math.random() * (gameArea.width / 20)) * 20;
             food.y = Math.floor(Math.random() * (gameArea.height / 20)) * 20;
 
-            score += 10; // Increment score by 10 or any other value you see fit
+            score += 10;
             scoreDisplay.text = "Score: " + score + "\nSpeed: " + timerInterval; // Update the display
         }
     }
@@ -79,7 +75,7 @@ Window {
 
     Timer {
         id: gameLoopTimer
-        interval: timerInterval - score/5 // Adjust for speed
+        interval: timerInterval - score/5
         running: true
         repeat: true
         onTriggered: {
@@ -92,16 +88,24 @@ Window {
         anchors.fill: parent
         focus: true
         Keys.onPressed: (event)=> {
-                            if (event.key === Qt.Key_Right && direction !== "left") {
-                                direction = "right";
-                            } else if (event.key === Qt.Key_Left && direction !== "right") {
-                                direction = "left";
-                            } else if (event.key === Qt.Key_Up && direction !== "down") {
-                                direction = "up";
-                            } else if (event.key === Qt.Key_Down && direction !== "up") {
-                                direction = "down";
-                            }
-                        }
+            if(!wasDirectionChanged){
+                if (event.key === Qt.Key_Right && direction !== "left") {
+                    direction = "right";
+                    wasDirectionChanged = true;
+                } else if (event.key === Qt.Key_Left && direction !== "right") {
+                    direction = "left";
+                    wasDirectionChanged = true;
+
+                } else if (event.key === Qt.Key_Up && direction !== "down") {
+                    direction = "up";
+                    wasDirectionChanged = true;
+
+                } else if (event.key === Qt.Key_Down && direction !== "up") {
+                    direction = "down";
+                    wasDirectionChanged = true;
+                }
+            }
+        }
     }
 
     Rectangle {
@@ -111,10 +115,6 @@ Window {
 
         GameOver{
             id: gameOverWindow
-        }
-
-        Fireworks{
-
         }
 
         Text {
@@ -132,7 +132,7 @@ Window {
             delegate: Rectangle {
                 width: 20; height: 20
                 color: "green"
-                x: modelData.x * 20 // Assuming each segment is 20x20
+                x: modelData.x * 20
                 y: modelData.y * 20
             }
         }
