@@ -18,7 +18,7 @@ Item {
             title: "Game Over!"
             informativeText: "Your Score: " + score
             onAccepted: {
-                Qt.quit();
+                appManager.restartApplication();
             }
         }
 

@@ -7,6 +7,8 @@
 #include "app_environment.h"
 #include "import_qml_components_plugins.h"
 #include "import_qml_plugins.h"
+#include <QQmlContext>
+#include "ApplicationManager.h"
 
 int main(int argc, char *argv[])
 {
@@ -17,7 +19,9 @@ int main(int argc, char *argv[])
     QQmlApplicationEngine engine;
     const QUrl url(u"qrc:Main/main.qml"_qs);
     QObject::connect(
-        &engine, &QQmlApplicationEngine::objectCreated, &app,
+        &engine,
+        &QQmlApplicationEngine::objectCreated,
+        &app,
         [url](QObject *obj, const QUrl &objUrl) {
             if (!obj && url == objUrl)
                 QCoreApplication::exit(-1);
@@ -32,6 +36,11 @@ int main(int argc, char *argv[])
     if (engine.rootObjects().isEmpty()) {
         return -1;
     }
+    // Register the C++ class for QML
+    ApplicationManager appManager;
+    engine.rootContext()->setContextProperty("appManager", &appManager);
+
+    engine.load(QUrl(QStringLiteral("qrc:/main.qml")));
 
     return app.exec();
 }
